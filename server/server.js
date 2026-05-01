@@ -4,6 +4,9 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import expertRoutes from './routes/experts.js';
+import bookingRoutes from './routes/bookings.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -17,7 +20,7 @@ const io = new Server(httpServer, {
   },
 });
 
-// Middleware
+
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
 app.use(express.json());
 
@@ -27,6 +30,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/experts', expertRoutes);
+app.use('/bookings', bookingRoutes);
+
+// Global error handler 
+app.use(errorHandler);
 
 // Socket.io connection log
 io.on('connection', (socket) => {
